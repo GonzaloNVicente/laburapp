@@ -53,6 +53,11 @@ input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,1
 .ok h2{margin:0;font-weight:800;font-size:30px;letter-spacing:-.8px;line-height:1.1}
 .ok p{margin:0;color:var(--muted)}
 .share{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:var(--teal);color:#fff;font-weight:800;font-size:19px;padding:16px 22px;border-radius:16px;min-height:58px;width:100%}
+.share.alt{background:#fff;color:var(--teal);border:2px solid var(--teal)}
+.share svg{flex-shrink:0}
+.shares .share{font-size:17px;padding:14px 16px;white-space:nowrap}
+.ok .corre{font-weight:800;color:var(--ink);margin-top:10px}
+.shares{display:flex;flex-direction:column;gap:10px;width:100%}
 footer{text-align:center;font-size:14px;color:var(--muted);margin-top:34px}
 [hidden]{display:none!important}
 </style>
@@ -121,7 +126,11 @@ laburapp
 <svg width="72" height="78" viewBox="16 14 88 96" aria-hidden="true"><path d="M60 18 L100 48 V86 Q100 94 92 94 H54 L38 106 V94 H28 Q20 94 20 86 V48 Z" fill="#0B6E75"/><path d="M40 74 A20 20 0 0 1 80 74 Z" fill="#FFB547"/><rect x="33" y="72" width="54" height="8" rx="4" fill="#FFB547"/><rect x="56" y="52" width="8" height="18" rx="3" fill="#E8922A"/></svg>
 <h2 id="ok-t">¡Listo, ya estás anotado!</h2>
 <p id="ok-p">Te escribimos por WhatsApp cuando lancemos la app en San Nicolás.</p>
-<a class="share" id="share" href="#" target="_blank" rel="noopener">Pasáselo a un colega por WhatsApp</a>
+<p class="corre">¿Nos ayudás a correr la voz?<br><span style="font-weight:500;color:var(--muted)">Mandáselo por WhatsApp a…</span></p>
+<div class="shares" id="shares">
+<a class="share" id="share-t" href="#" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>Un trabajador de oficio</a>
+<a class="share" id="share-c" href="#" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>Alguien que busque uno</a>
+</div>
 </div>
 
 <footer>Laburapp · San Nicolás de los Arroyos · <a href="https://instagram.com/laburapp.ar" style="color:inherit">@laburapp.ar</a></footer>
@@ -238,10 +247,15 @@ $("#form").addEventListener("submit", async (e) => {
   $("#ok").hidden = false;
   if (repetido) { $("#ok-t").textContent = "¡Ya estabas anotado!"; }
   if (tipo === "cliente") $("#ok-p").textContent = "Te avisamos por WhatsApp apenas la app esté lista en San Nicolás.";
-  const msg = tipo === "trabajador"
-    ? "Che, se viene Laburapp, una app para conseguir laburos de oficio en San Nicolás. Anotarse es gratis: " + SITIO
-    : "Mirá, se viene Laburapp: una app para encontrar pintores, electricistas y plomeros en San Nicolás. " + SITIO + "#cliente";
-  $("#share").href = "https://wa.me/?text=" + encodeURIComponent(msg);
+  // Dos links distintos: cada uno abre la página en la pestaña que corresponde
+  const msgT = "Che, se viene Laburapp, una app para conseguir laburos de oficio en San Nicolás. Si hacés pintura, electricidad, plomería o cualquier oficio, anotate gratis acá: " + SITIO + "?utm_source=wa_trabajador";
+  const msgC = "Mirá, se viene Laburapp: una app para encontrar pintores, electricistas, plomeros y más en San Nicolás. Dejá tu WhatsApp y te avisan cuando esté: " + SITIO + "?utm_source=wa_cliente#cliente";
+  $("#share-t").href = "https://wa.me/?text=" + encodeURIComponent(msgT);
+  $("#share-c").href = "https://wa.me/?text=" + encodeURIComponent(msgC);
+  // El que se anotó ve primero (y destacado) el botón de su mismo grupo
+  const [prim, sec] = tipo === "trabajador" ? [$("#share-t"), $("#share-c")] : [$("#share-c"), $("#share-t")];
+  prim.classList.remove("alt"); sec.classList.add("alt");
+  $("#shares").prepend(prim);
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
