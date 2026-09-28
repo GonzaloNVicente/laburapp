@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laburapp · Anotate gratis</title>
+<meta name="description" content="Laburapp, la app de oficios de San Nicolás. Anotate gratis y sé de los primeros.">
+<meta property="og:title" content="Laburapp · La app de oficios de San Nicolás">
+<meta property="og:description" content="¿Sos trabajador de oficio? Anotate gratis y sé de los primeros.">
+<meta name="theme-color" content="#0B6E75">
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap">
+<style>
+:root{--teal:#0B6E75;--teal-d:#095a60;--amb:#FFB547;--amb-d:#E8922A;--ink:#0B2E33;--soft:#E3F1F2;--muted:#4A6568;--bg:#F4F8F8;--err:#B42318}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:18px;line-height:1.45}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px 48px}
+header{background:var(--teal);color:#fff;padding:calc(20px + env(safe-area-inset-top,0px)) 18px 30px}
+header .in{max-width:560px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:28px;letter-spacing:-1px}
+.chip{display:inline-block;background:var(--amb);color:var(--ink);font-weight:600;font-size:15px;padding:5px 12px;border-radius:999px;margin-top:22px}
+h1{font-weight:800;font-size:clamp(32px,8.5vw,42px);line-height:1.05;letter-spacing:-1.2px;margin:12px 0 10px;text-wrap:balance}
+header p{margin:0;color:#D5ECEE;font-size:18px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fff;border-radius:16px;padding:6px;margin:-18px 0 22px;box-shadow:0 6px 20px rgba(11,46,51,.08);position:relative}
+.tabs button{border:0;background:transparent;font:inherit;font-weight:600;font-size:16px;padding:14px 8px;border-radius:12px;color:var(--muted);cursor:pointer;min-height:52px}
+.tabs button[aria-selected="true"]{background:var(--teal);color:#fff}
+form{display:flex;flex-direction:column;gap:22px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+label.q,legend{font-weight:800;font-size:20px;padding:0}
+.hint{font-size:15px;color:var(--muted);margin-top:-4px}
+input[type=text],input[type=tel]{width:100%;font:inherit;font-size:20px;padding:15px 16px;border:2px solid #CFDFE0;border-radius:14px;background:#fff;color:var(--ink);min-height:58px}
+input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,110,117,.18)}
+.phone{display:flex;gap:8px}
+.phone .pre{flex-shrink:0;display:flex;align-items:center;padding:0 14px;border:2px solid #CFDFE0;border-radius:14px;background:var(--soft);font-weight:600;font-size:19px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.opt span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:56px;padding:10px;border:2px solid #CFDFE0;border-radius:14px;background:#fff;font-weight:600;font-size:17px;line-height:1.15}
+.opt input:checked+span{background:var(--teal);border-color:var(--teal);color:#fff}
+.opt input:focus-visible+span{box-shadow:0 0 0 3px rgba(11,110,117,.35)}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--muted)}
+.consent input{width:24px;height:24px;flex-shrink:0;margin-top:1px;accent-color:var(--teal)}
+.send{border:0;font:inherit;font-weight:800;font-size:21px;background:var(--amb);color:var(--ink);padding:18px;border-radius:16px;min-height:62px;cursor:pointer}
+.send:disabled{opacity:.6;cursor:wait}
+.err{color:var(--err);font-weight:600;font-size:16px;min-height:1px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ok{background:#fff;border-radius:20px;padding:28px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(11,46,51,.08)}
+.ok h2{margin:0;font-weight:800;font-size:30px;letter-spacing:-.8px;line-height:1.1}
+.ok p{margin:0;color:var(--muted)}
+.share{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:var(--teal);color:#fff;font-weight:800;font-size:19px;padding:16px 22px;border-radius:16px;min-height:58px;width:100%}
+footer{text-align:center;font-size:14px;color:var(--muted);margin-top:34px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+<div class="in">
+<div class="logo">
+<svg width="36" height="40" viewBox="16 14 88 96" aria-hidden="true"><path d="M60 18 L100 48 V86 Q100 94 92 94 H54 L38 106 V94 H28 Q20 94 20 86 V48 Z" fill="#fff"/><path d="M40 74 A20 20 0 0 1 80 74 Z" fill="#FFB547"/><rect x="33" y="72" width="54" height="8" rx="4" fill="#FFB547"/><rect x="56" y="52" width="8" height="18" rx="3" fill="#E8922A"/></svg>
+laburapp
+</div>
+<span class="chip">Estamos armando la app</span>
+<h1 id="titulo">La app de oficios de San Nicolás</h1>
+<p id="bajada">¿Sos trabajador de oficio? Anotate gratis y sé de los primeros cuando lancemos.</p>
+</div>
+</header>
+
+<main class="wrap">
+<div class="tabs" role="tablist" aria-label="¿Quién sos?">
+<button type="button" role="tab" id="tab-t" aria-selected="true" aria-controls="form">Soy trabajador</button>
+<button type="button" role="tab" id="tab-c" aria-selected="false" aria-controls="form">Necesito un trabajador</button>
+</div>
+
+<form id="form" novalidate>
+<div class="hp" aria-hidden="true"><label for="empresa_web">No completar</label><input type="text" id="empresa_web" name="empresa_web" tabindex="-1" autocomplete="off"></div>
+
+<fieldset>
+<label class="q" for="nombre">Tu nombre</label>
+<input type="text" id="nombre" name="nombre" autocomplete="name" placeholder="Ej: Juan Pérez" maxlength="80" required>
+</fieldset>
+
+<fieldset>
+<label class="q" for="wa">Tu WhatsApp</label>
+<div class="phone"><span class="pre">+54</span><input type="tel" id="wa" name="wa" inputmode="numeric" autocomplete="tel-national" placeholder="336 412 3456" maxlength="16" required></div>
+<div class="hint">Con código de área, sin el 0 ni el 15. Te escribimos solo para avisarte del lanzamiento.</div>
+</fieldset>
+
+<fieldset id="f-oficios">
+<legend>¿Qué trabajos hacés?</legend>
+<div class="hint">Tocá todos los que hacés.</div>
+<div class="opts" id="oficios"></div>
+</fieldset>
+
+<fieldset id="f-comercio" hidden>
+<legend>¿Para dónde lo necesitás?</legend>
+<div class="opts">
+<label class="opt"><input type="radio" name="para" value="casa" checked><span>Mi casa</span></label>
+<label class="opt"><input type="radio" name="para" value="comercio"><span>Mi comercio</span></label>
+</div>
+</fieldset>
+
+<fieldset>
+<legend id="zona-leg">¿En qué zona trabajás?</legend>
+<div class="opts" id="zonas"></div>
+</fieldset>
+
+<label class="consent"><input type="checkbox" id="acepto" required><span>Acepto que Laburapp guarde estos datos para contactarme por el lanzamiento. Podés pedir que los borremos cuando quieras.</span></label>
+
+<div class="err" id="err" role="alert"></div>
+<button class="send" id="send" type="submit">Anotarme gratis</button>
+</form>
+
+<div class="ok" id="ok" hidden>
+<svg width="72" height="78" viewBox="16 14 88 96" aria-hidden="true"><path d="M60 18 L100 48 V86 Q100 94 92 94 H54 L38 106 V94 H28 Q20 94 20 86 V48 Z" fill="#0B6E75"/><path d="M40 74 A20 20 0 0 1 80 74 Z" fill="#FFB547"/><rect x="33" y="72" width="54" height="8" rx="4" fill="#FFB547"/><rect x="56" y="52" width="8" height="18" rx="3" fill="#E8922A"/></svg>
+<h2 id="ok-t">¡Listo, ya estás anotado!</h2>
+<p id="ok-p">Te escribimos por WhatsApp cuando lancemos la app en San Nicolás.</p>
+<a class="share" id="share" href="#" target="_blank" rel="noopener">Pasáselo a un colega por WhatsApp</a>
+</div>
+
+<footer>Laburapp · San Nicolás de los Arroyos · <a href="https://instagram.com/laburapp.ar" style="color:inherit">@laburapp.ar</a></footer>
+</main>
+
+<script>
+// ====== CONFIGURACIÓN (completar con los datos de Supabase) ======
+const SUPABASE_URL = "https://mfunhprdvdabtfolhycy.supabase.co";   // ej: https://xxxx.supabase.co
+const SUPABASE_KEY = "sb_publishable_EwFwgHsJBVPkGAYs4ozYbQ_qvKBZ2Fy";   // clave pública (publishable / anon)
+const SITIO = location.protocol.startsWith("http") ? location.origin + "/" : "https://laburapp.ar/";
+// ================================================================
+
+const OFICIOS = ["Pintura","Electricidad","Plomería","Gas","Albañilería","Carpintería","Herrería","Jardinería","Limpieza","Fletes","Aire acondicionado","Otro"];
+const ZONAS = ["Centro","Zona Norte","Zona Sur","Zona Oeste","Costanera","Otra zona"];
+let tipo = "trabajador";
+
+const $ = (s) => document.querySelector(s);
+function opts(el, list, name, type){
+  el.innerHTML = list.map(v => `<label class="opt"><input type="${type}" name="${name}" value="${v}"><span>${v}</span></label>`).join("");
+}
+opts($("#oficios"), OFICIOS, "oficio", "checkbox");
+opts($("#zonas"), ZONAS, "zona", "radio");
+
+function setTipo(t){
+  tipo = t;
+  $("#tab-t").setAttribute("aria-selected", t === "trabajador");
+  $("#tab-c").setAttribute("aria-selected", t === "cliente");
+  $("#f-oficios").hidden = t !== "trabajador";
+  $("#f-comercio").hidden = t !== "cliente";
+  $("#zona-leg").textContent = t === "trabajador" ? "¿En qué zona trabajás?" : "¿En qué zona estás?";
+  $("#bajada").textContent = t === "trabajador"
+    ? "¿Sos trabajador de oficio? Anotate gratis y sé de los primeros cuando lancemos."
+    : "¿Necesitás un pintor, electricista o plomero? Dejanos tu WhatsApp y te avisamos apenas lancemos.";
+  $("#err").textContent = "";
+}
+$("#tab-t").onclick = () => setTipo("trabajador");
+$("#tab-c").onclick = () => setTipo("cliente");
+if (location.hash === "#cliente") setTipo("cliente");
+
+$("#wa").addEventListener("input", e => { e.target.value = e.target.value.replace(/[^\d ]/g, ""); });
+
+function limpiarTel(v){
+  let d = v.replace(/\D/g, "");
+  if (d.startsWith("0")) d = d.slice(1);
+  return d;
+}
+
+$("#form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("#err"); err.textContent = "";
+  if ($("#empresa_web").value) return; // bot
+  const nombre = $("#nombre").value.trim();
+  const tel = limpiarTel($("#wa").value);
+  const oficios = [...document.querySelectorAll('input[name=oficio]:checked')].map(i => i.value);
+  const zonaEl = document.querySelector('input[name=zona]:checked');
+  if (nombre.length < 2) { err.textContent = "Escribí tu nombre."; $("#nombre").focus(); return; }
+  if (tel.length < 10 || tel.length > 11) { err.textContent = "Revisá el WhatsApp: tiene que tener el código de área (ej: 336 412 3456)."; $("#wa").focus(); return; }
+  if (tipo === "trabajador" && oficios.length === 0) { err.textContent = "Tocá al menos un trabajo que hagas."; return; }
+  if (!zonaEl) { err.textContent = "Elegí una zona."; return; }
+  if (!$("#acepto").checked) { err.textContent = "Para anotarte, tenés que aceptar que guardemos tus datos."; return; }
+
+  const fila = {
+    tipo,
+    nombre,
+    whatsapp: tel,
+    oficios: tipo === "trabajador" ? oficios : [],
+    zona: zonaEl.value,
+    es_comercio: tipo === "cliente" && document.querySelector('input[name=para]:checked').value === "comercio",
+    origen: new URLSearchParams(location.search).get("utm_source") || document.referrer.slice(0, 120) || "directo"
+  };
+
+  const btn = $("#send"); btn.disabled = true; btn.textContent = "Enviando…";
+  let repetido = false;
+  try {
+    const r = await fetch(SUPABASE_URL + "/rest/v1/preinscripciones", {
+      method: "POST",
+      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" },
+      body: JSON.stringify(fila)
+    });
+    if (r.status === 409) repetido = true;
+    else if (!r.ok) throw new Error(r.status);
+  } catch (x) {
+    err.textContent = "No se pudo enviar. Revisá tu conexión y probá de nuevo.";
+    btn.disabled = false; btn.textContent = "Anotarme gratis";
+    return;
+  }
+  $("#form").hidden = true; document.querySelector(".tabs").hidden = true;
+  $("#ok").hidden = false;
+  if (repetido) { $("#ok-t").textContent = "¡Ya estabas anotado!"; }
+  if (tipo === "cliente") $("#ok-p").textContent = "Te avisamos por WhatsApp apenas la app esté lista en San Nicolás.";
+  const msg = tipo === "trabajador"
+    ? "Che, se viene Laburapp, una app para conseguir laburos de oficio en San Nicolás. Anotarse es gratis: " + SITIO
+    : "Mirá, se viene Laburapp: una app para encontrar pintores, electricistas y plomeros en San Nicolás. " + SITIO + "#cliente";
+  $("#share").href = "https://wa.me/?text=" + encodeURIComponent(msg);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
+</body>
+</html>
