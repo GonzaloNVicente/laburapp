@@ -41,6 +41,8 @@ input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,1
 .opt span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:56px;padding:10px;border:2px solid #CFDFE0;border-radius:14px;background:#fff;font-weight:600;font-size:17px;line-height:1.15}
 .opt input:checked+span{background:var(--teal);border-color:var(--teal);color:#fff}
 .opt input:focus-visible+span{box-shadow:0 0 0 3px rgba(11,110,117,.35)}
+.opt.full{grid-column:1/-1}
+#otro-box{margin-top:2px}
 .consent{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--muted)}
 .consent input{width:24px;height:24px;flex-shrink:0;margin-top:1px;accent-color:var(--teal)}
 .send{border:0;font:inherit;font-weight:800;font-size:21px;background:var(--amb);color:var(--ink);padding:18px;border-radius:16px;min-height:62px;cursor:pointer}
@@ -92,6 +94,7 @@ laburapp
 <legend>¿Qué trabajos hacés?</legend>
 <div class="hint">Tocá todos los que hacés.</div>
 <div class="opts" id="oficios"></div>
+<div id="otro-box" hidden><input type="text" id="otro" maxlength="60" placeholder="¿Cuál? Ej: techista, vidriero…" aria-label="¿Qué otro trabajo hacés?"></div>
 </fieldset>
 
 <fieldset id="f-comercio" hidden>
@@ -103,7 +106,8 @@ laburapp
 </fieldset>
 
 <fieldset>
-<legend id="zona-leg">¿En qué zona trabajás?</legend>
+<legend id="zona-leg">¿En qué zonas trabajás?</legend>
+<div class="hint" id="zona-hint">Podés tocar varias.</div>
 <div class="opts" id="zonas"></div>
 </fieldset>
 
@@ -131,15 +135,35 @@ const SITIO = location.protocol.startsWith("http") ? location.origin + "/" : "ht
 // ================================================================
 
 const OFICIOS = ["Pintura","Electricidad","Plomería","Gas","Albañilería","Carpintería","Herrería","Jardinería","Limpieza","Fletes","Aire acondicionado","Otro"];
-const ZONAS = ["Centro","Zona Norte","Zona Sur","Zona Oeste","Costanera","Otra zona"];
+const TODA = "Toda la ciudad";
+const ZONAS_T = [TODA,"Centro","Zona Norte","Zona Sur","Zona Oeste","Costanera","Alrededores"];
+const ZONAS_C = ["Centro","Zona Norte","Zona Sur","Zona Oeste","Costanera","Otra zona"];
 let tipo = "trabajador";
 
 const $ = (s) => document.querySelector(s);
 function opts(el, list, name, type){
-  el.innerHTML = list.map(v => `<label class="opt"><input type="${type}" name="${name}" value="${v}"><span>${v}</span></label>`).join("");
+  el.innerHTML = list.map(v => `<label class="opt${v === TODA ? " full" : ""}"><input type="${type}" name="${name}" value="${v}"><span>${v}</span></label>`).join("");
 }
 opts($("#oficios"), OFICIOS, "oficio", "checkbox");
-opts($("#zonas"), ZONAS, "zona", "radio");
+
+// "Otro": aparece el cuadro para escribir cuál
+$("#oficios").addEventListener("change", e => {
+  if (e.target.value !== "Otro") return;
+  $("#otro-box").hidden = !e.target.checked;
+  if (e.target.checked) $("#otro").focus();
+});
+
+// Zonas: el trabajador elige varias (o toda la ciudad); el cliente, una sola
+function pintarZonas(){
+  if (tipo === "trabajador") opts($("#zonas"), ZONAS_T, "zona", "checkbox");
+  else opts($("#zonas"), ZONAS_C, "zona", "radio");
+}
+$("#zonas").addEventListener("change", e => {
+  if (tipo !== "trabajador" || !e.target.checked) return;
+  const todas = [...document.querySelectorAll('input[name=zona]')];
+  if (e.target.value === TODA) todas.forEach(i => { if (i.value !== TODA && i.value !== "Alrededores") i.checked = false; });
+  else if (e.target.value !== "Alrededores") todas.forEach(i => { if (i.value === TODA) i.checked = false; });
+});
 
 function setTipo(t){
   tipo = t;
@@ -147,7 +171,9 @@ function setTipo(t){
   $("#tab-c").setAttribute("aria-selected", t === "cliente");
   $("#f-oficios").hidden = t !== "trabajador";
   $("#f-comercio").hidden = t !== "cliente";
-  $("#zona-leg").textContent = t === "trabajador" ? "¿En qué zona trabajás?" : "¿En qué zona estás?";
+  $("#zona-leg").textContent = t === "trabajador" ? "¿En qué zonas trabajás?" : "¿En qué zona estás?";
+  $("#zona-hint").hidden = t !== "trabajador";
+  pintarZonas();
   $("#bajada").textContent = t === "trabajador"
     ? "¿Sos trabajador de oficio? Anotate gratis y sé de los primeros cuando lancemos."
     : "¿Necesitás un pintor, electricista o plomero? Dejanos tu WhatsApp y te avisamos apenas lancemos.";
@@ -155,7 +181,7 @@ function setTipo(t){
 }
 $("#tab-t").onclick = () => setTipo("trabajador");
 $("#tab-c").onclick = () => setTipo("cliente");
-if (location.hash === "#cliente") setTipo("cliente");
+setTipo(location.hash === "#cliente" ? "cliente" : "trabajador");
 
 $("#wa").addEventListener("input", e => { e.target.value = e.target.value.replace(/[^\d ]/g, ""); });
 
@@ -172,11 +198,13 @@ $("#form").addEventListener("submit", async (e) => {
   const nombre = $("#nombre").value.trim();
   const tel = limpiarTel($("#wa").value);
   const oficios = [...document.querySelectorAll('input[name=oficio]:checked')].map(i => i.value);
-  const zonaEl = document.querySelector('input[name=zona]:checked');
+  const zonas = [...document.querySelectorAll('input[name=zona]:checked')].map(i => i.value);
+  const otro = $("#otro").value.trim();
   if (nombre.length < 2) { err.textContent = "Escribí tu nombre."; $("#nombre").focus(); return; }
   if (tel.length < 10 || tel.length > 11) { err.textContent = "Revisá el WhatsApp: tiene que tener el código de área (ej: 336 412 3456)."; $("#wa").focus(); return; }
   if (tipo === "trabajador" && oficios.length === 0) { err.textContent = "Tocá al menos un trabajo que hagas."; return; }
-  if (!zonaEl) { err.textContent = "Elegí una zona."; return; }
+  if (tipo === "trabajador" && oficios.includes("Otro") && otro.length < 2) { err.textContent = "Contanos qué otro trabajo hacés."; $("#otro").focus(); return; }
+  if (zonas.length === 0) { err.textContent = tipo === "trabajador" ? "Elegí al menos una zona (o toda la ciudad)." : "Elegí una zona."; return; }
   if (!$("#acepto").checked) { err.textContent = "Para anotarte, tenés que aceptar que guardemos tus datos."; return; }
 
   const fila = {
@@ -184,7 +212,9 @@ $("#form").addEventListener("submit", async (e) => {
     nombre,
     whatsapp: tel,
     oficios: tipo === "trabajador" ? oficios : [],
-    zona: zonaEl.value,
+    oficio_otro: tipo === "trabajador" && oficios.includes("Otro") ? otro : null,
+    zona: tipo === "cliente" ? zonas[0] : null,
+    zonas: tipo === "trabajador" ? zonas : [],
     es_comercio: tipo === "cliente" && document.querySelector('input[name=para]:checked').value === "comercio",
     origen: new URLSearchParams(location.search).get("utm_source") || document.referrer.slice(0, 120) || "directo"
   };
